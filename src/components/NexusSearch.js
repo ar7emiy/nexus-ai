@@ -47,7 +47,7 @@ const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
     if (sendTrigger > 0) {
       handleSend();
     }
-  }, [sendTrigger]);
+  }, [sendTrigger, handleSend]);
 
   return (
     <div style={{ display: 'flex', height: '100%', width: '100%' }}>
