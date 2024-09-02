@@ -9,7 +9,6 @@ const TextInputBar = ({ value, onChange, onSend }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     onSend();
-    onChange('');  // Clear the input field after sending the message
   };
 
   return (

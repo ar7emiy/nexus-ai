@@ -19,6 +19,17 @@ const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
         // Add user message to the chat
         setMessages(prevMessages => [...prevMessages, { text: inputValue, isUser: true }]);
 
+        // Temporary message
+        const tempMessage = (
+          <span>
+            Just like Grace Hopper, we found a computer "<a href="https://education.nationalgeographic.org/resource/worlds-first-computer-bug/" target="_blank" rel="noopener noreferrer">bug</a>". 
+            We're checking it out. If you like fun facts you should click on the "<a href="https://education.nationalgeographic.org/resource/worlds-first-computer-bug/" target="_blank" rel="noopener noreferrer">bug</a>" by the way!
+          </span>
+        );
+        setMessages(prevMessages => [...prevMessages, { text: tempMessage, isUser: false }]);
+
+        // Commented out API call
+        /*
         // Make API call to GCP function
         const response = await axios.post('https://us-central1-silver-idea-432502-c0.cloudfunctions.net/nxsFunction-main', { input: inputValue });
 
@@ -27,31 +38,25 @@ const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
 
         // Save the system response in the history
         setHistory(prevHistory => [...prevHistory, JSON.stringify(response.data)]);
+        */
 
-        setInputValue(''); // Clear the input after sending
+        // For now, just add the temporary message to history
+        setHistory(prevHistory => [...prevHistory, "We found a bug!"]);
+
+        setInputValue('');
       } catch (error) {
-        console.error('Error calling API:', error);
+        console.error('Error processing request:', error);
         setMessages(prevMessages => [...prevMessages, { text: 'Error processing your request', isUser: false }]);
       }
     }
-  }, [inputValue, setInputValue]);  // Dependencies are inputValue and setInputValue
-
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value); // Update input value as the user types
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSend(); // Only send when 'Enter' is pressed
-    }
-  };
+  }, [inputValue, setInputValue]);
 
   // Use effect to handle changes in sendTrigger
   useEffect(() => {
     if (sendTrigger > 0) {
       handleSend();
     }
-  }, [sendTrigger, handleSend]);  // Now handleSend is stable and memoized
+  }, [sendTrigger, handleSend]);
 
   return (
     <div style={{ display: 'flex', height: '100%', width: '100%' }}>
@@ -102,15 +107,6 @@ const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
             </div>
           ))}
         </div>
-
-        <input
-          type="text"
-          value={inputValue}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
-          placeholder="Type your message..."
-          style={{ padding: '10px', fontSize: '16px', borderRadius: '5px', border: '1px solid #ccc', marginBottom: '10px' }}
-        />
       </div>
     </div>
   );
