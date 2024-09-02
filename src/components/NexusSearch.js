@@ -43,11 +43,6 @@ const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
     }
   }, [sendTrigger, handleSend]);  // Now handleSend is stable and memoized
 
-  // (return part of the component)
-};
-
-export default NexusSearch;
-
   return (
     <div style={{ display: 'flex', height: '100%', width: '100%' }}>
       <div style={{ width: '250px', minWidth: '250px', padding: '10px', backgroundColor: '#C9A58A', borderRight: '1px solid #e0e0e0', boxSizing: 'border-box', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
