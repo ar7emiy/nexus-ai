@@ -1,0 +1,55 @@
+.text-input-container {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.text-input-bar {
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+  width: 90%;
+  background-color: white;
+  border-radius: 24px;
+  padding: 8px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: auto;
+}
+
+.text-input {
+  flex-grow: 1;
+  border: none;
+  font-size: 16px;
+  padding: 8px;
+  background: transparent;
+  outline: none;
+}
+
+.submit-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #007bff;
+  transition: color 0.3s ease;
+}
+
+.submit-button:hover {
+  color: #0056b3;
+}
+
+.submit-button:focus {
+  outline: none;
+}
+
+.submit-button svg {
+  width: 24px;
+  height: 24px;
+}
