@@ -1,16 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
   const [messages, setMessages] = useState([]);
   const [history, setHistory] = useState([]);
-
-  //const ProfileIcon = () => (
-  //  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  //    <rect width="32" height="32" rx="16" fill="#A65D3A"/>
-  //    <path d="M22.3999 24.0001H9.59985V22.4001C9.59985 20.191 11.3907 18.4001 13.5999 18.4001H18.3999C20.609 18.4001 22.3999 20.191 22.3999 22.4001V24.0001ZM15.9999 16.8001C13.3489 16.8001 11.1999 14.651 11.1999 12.0001C11.1999 9.34911 13.3489 7.20007 15.9999 7.20007C18.6508 7.20007 20.7999 9.34911 20.7999 12.0001C20.7999 14.651 18.6508 16.8001 15.9999 16.8001Z" fill="white"/>
-  //  </svg>
-  //);
 
   const ChatbotIcon = () => (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -19,7 +12,8 @@ const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
     </svg>
   );
 
-  const handleSend = async () => {
+  // Memoize handleSend to prevent it from being recreated on every render
+  const handleSend = useCallback(async () => {
     if (inputValue.trim() !== '') {
       try {
         // Add user message to the chat
@@ -40,14 +34,19 @@ const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
         setMessages(prevMessages => [...prevMessages, { text: 'Error processing your request', isUser: false }]);
       }
     }
-  };
+  }, [inputValue, setInputValue]);  // Dependencies are inputValue and setInputValue
 
   // Use effect to handle changes in sendTrigger
   useEffect(() => {
     if (sendTrigger > 0) {
       handleSend();
     }
-  }, [sendTrigger, handleSend]);
+  }, [sendTrigger, handleSend]);  // Now handleSend is stable and memoized
+
+  // (return part of the component)
+};
+
+export default NexusSearch;
 
   return (
     <div style={{ display: 'flex', height: '100%', width: '100%' }}>
