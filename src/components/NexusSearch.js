@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+// mport axios from 'axios';
 
 const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
   const [messages, setMessages] = useState([]);
