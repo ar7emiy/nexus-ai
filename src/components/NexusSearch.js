@@ -28,13 +28,23 @@ const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
         // Save the system response in the history
         setHistory(prevHistory => [...prevHistory, JSON.stringify(response.data)]);
 
-        setInputValue('');
+        setInputValue(''); // Clear the input after sending
       } catch (error) {
         console.error('Error calling API:', error);
         setMessages(prevMessages => [...prevMessages, { text: 'Error processing your request', isUser: false }]);
       }
     }
   }, [inputValue, setInputValue]);  // Dependencies are inputValue and setInputValue
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value); // Update input value as the user types
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSend(); // Only send when 'Enter' is pressed
+    }
+  };
 
   // Use effect to handle changes in sendTrigger
   useEffect(() => {
@@ -60,8 +70,6 @@ const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
           ))}
         </ul>
       </div>
-
-
 
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', padding: '40px', backgroundColor: '#F0E0D1' }}>
         <div style={{ flexGrow: 1, overflowY: 'auto', marginBottom: '20px', padding: '20px', boxSizing: 'border-box' }}>
@@ -91,10 +99,18 @@ const NexusSearch = ({ inputValue, setInputValue, sendTrigger }) => {
               >
                 {msg.text}
               </div>
-              {/* {msg.isUser && <ProfileIcon />} */}
             </div>
           ))}
         </div>
+
+        <input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onKeyPress={handleKeyPress}
+          placeholder="Type your message..."
+          style={{ padding: '10px', fontSize: '16px', borderRadius: '5px', border: '1px solid #ccc', marginBottom: '10px' }}
+        />
       </div>
     </div>
   );
