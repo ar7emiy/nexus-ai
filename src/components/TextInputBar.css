@@ -1,18 +1,24 @@
 .text-input-container {
   position: fixed;
   bottom: 20px;
-  left: 0;
+  left: 250px; /* Width of the sidebar */
   right: 0;
   display: flex;
   justify-content: center;
   pointer-events: none;
 }
 
+.text-input-wrapper {
+  width: 100%;
+  max-width: 800px; /* Match this with the max-width of your chat space */
+  padding: 0 40px; /* Match this with the padding of your chat space */
+  box-sizing: border-box;
+}
+
 .text-input-bar {
   display: flex;
   align-items: center;
-  max-width: 600px;
-  width: 90%;
+  width: 100%;
   background-color: white;
   border-radius: 24px;
   padding: 8px 16px;
@@ -37,12 +43,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #007bff;
+  color: #A65D3A;
   transition: color 0.3s ease;
 }
 
 .submit-button:hover {
-  color: #0056b3;
+  color: #8B4F31;
 }
 
 .submit-button:focus {
@@ -52,4 +58,11 @@
 .submit-button svg {
   width: 24px;
   height: 24px;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .text-input-container {
+    left: 0; /* Full width on smaller screens */
+  }
 }
