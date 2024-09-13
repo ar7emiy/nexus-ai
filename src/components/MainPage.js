@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AITutor from './AITutor';
 import TextInputBar from './TextInputBar';
 import NexusLogo from './NexusLogo';
@@ -10,10 +11,12 @@ const MainPage = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [history, setHistory] = useState([]);
-  const [selectedSnippet, setSelectedSnippet] = useState(null);
+  const [selectedVideoSnippet, setSelectedVideoSnippet] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
+  const [pdfUrl, setPdfUrl] = useState('');
   const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,31 +34,36 @@ const MainPage = () => {
         setIsLoading(true);
         setMessages(prevMessages => [...prevMessages, { text: input, isUser: true }]);
 
-        const response = await fetch('https://nxs-function-874406122772.us-central1.run.app', {
+        // Make both API calls
+        const videoResponse = await fetch('https://nxs-function-874406122772.us-central1.run.app', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ input }),
         });
-        const data = await response.json();
+        const videoData = await videoResponse.json();
 
-        console.log('API Response:', JSON.stringify(data, null, 2));
+        const pdfResponse = await fetch('https://us-central1-silver-idea-432502-c0.cloudfunctions.net/pdf_retrieval_function', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ input }),
+        });
+        const pdfData = await pdfResponse.json();
 
-        setVideoUrl(data.video_url);
+        setVideoUrl(videoData.video_url);
+        setPdfUrl(pdfData.pdf_url);
 
         setMessages(prevMessages => [
           ...prevMessages,
-          { text: input, isUser: true },
           { 
             isUser: false, 
             customContent: true,
-            data: data
+            videoData: videoData,
+            pdfData: pdfData
           },
         ]);
 
         setHistory(prevHistory => [...prevHistory, input]);
-        setSelectedSnippet(data.results[0]);
+        setSelectedVideoSnippet(videoData.results[0]);
         setInput('');
       } catch (error) {
         console.error('Error processing request:', error);
@@ -66,9 +74,22 @@ const MainPage = () => {
     }
   }, [input]);
 
-  const handleSnippetClick = useCallback((snippet) => {
-    setSelectedSnippet(snippet);
+  const handleVideoSnippetClick = useCallback((snippet) => {
+    setSelectedVideoSnippet(snippet);
   }, []);
+
+  const handleViewPDF = useCallback(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && !lastMessage.isUser) {
+      navigate('/pdf-viewer', { 
+        state: { 
+          pdfUrl: pdfUrl, 
+          searchTerm: input, 
+          results: lastMessage.pdfData.results 
+        } 
+      });
+    }
+  }, [messages, pdfUrl, input, navigate]);
 
   const formatTimestamp = (timestamp) => {
     return timestamp.split('.')[0];
@@ -90,7 +111,7 @@ const MainPage = () => {
     </div>
   );
 
-  const SnippetList = React.memo(({ snippets, onSnippetClick, selectedSnippet }) => (
+  const VideoSnippetList = React.memo(({ snippets, onSnippetClick, selectedSnippet }) => (
     <div className="snippet-list">
       {snippets.map((snippet, index) => (
         <div 
@@ -102,6 +123,17 @@ const MainPage = () => {
           <span className="timestamp">
             [{formatTimestamp(snippet.time_stamp.start_time)} - {formatTimestamp(snippet.time_stamp.end_time)}]
           </span>
+        </div>
+      ))}
+    </div>
+  ));
+
+  const PDFSnippetList = React.memo(({ snippets }) => (
+    <div className="snippet-list">
+      {snippets.map((snippet, index) => (
+        <div key={index} className="snippet-item">
+          <p>{snippet.summary}</p>
+          <span className="similarity">Similarity: {snippet.similarity.toFixed(2)}</span>
         </div>
       ))}
     </div>
@@ -145,7 +177,6 @@ const MainPage = () => {
                 ))}
               </ul>
             </div>
-
             <div className="main-content">
               <div className="message-container">
                 {messages.map((msg, index) => (
@@ -154,18 +185,22 @@ const MainPage = () => {
                     <div className="message-content">
                       {msg.customContent ? (
                         <>
+                          <h3>Video Results</h3>
                           <VideoPlayer
                             videoUrl={videoUrl}
-                            snippets={msg.data.results}
-                            currentTimeRange={selectedSnippet?.time_stamp}
+                            snippets={msg.videoData.results}
+                            currentTimeRange={selectedVideoSnippet?.time_stamp}
                             onTimeUpdate={() => {}}
-                            selectedSnippet={selectedSnippet}
+                            selectedSnippet={selectedVideoSnippet}
                           />
-                          <SnippetList
-                            snippets={msg.data.results}
-                            onSnippetClick={handleSnippetClick}
-                            selectedSnippet={selectedSnippet}
+                          <VideoSnippetList
+                            snippets={msg.videoData.results}
+                            onSnippetClick={handleVideoSnippetClick}
+                            selectedSnippet={selectedVideoSnippet}
                           />
+                          <h3>PDF Results</h3>
+                          <button onClick={handleViewPDF}>View PDF</button>
+                          <PDFSnippetList snippets={msg.pdfData.results} />
                         </>
                       ) : (
                         msg.text

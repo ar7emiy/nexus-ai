@@ -1,5 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDropzone } from 'react-dropzone';
 import NexusLogo from './NexusLogo';
 import './HomePage.css';
 
@@ -17,6 +18,56 @@ const ProfileIcon = () => (
 );
 
 const HomePage = () => {
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState('idle');
+  const navigate = useNavigate();
+
+  const onDrop = useCallback((acceptedFiles) => {
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      if (file.type === 'video/mp4') {
+        setUploadedFile(file);
+      } else {
+        alert('Please upload an MP4 file.');
+      }
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: 'video/mp4',
+    multiple: false
+  });
+
+  const handleUpload = async () => {
+    if (!uploadedFile) return;
+
+    setUploadStatus('uploading');
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', uploadedFile);
+
+      // Replace with your actual upload endpoint
+      const response = await fetch('https://your-upload-endpoint.com/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      setUploadStatus('success');
+      setTimeout(() => {
+        setUploadStatus('idle');
+      }, 3000);
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadStatus('error');
+    }
+  };
+
   return (
     <div className="home-page">
       <header className="header">
@@ -53,10 +104,36 @@ const HomePage = () => {
           <h2 className="file-upload-title">
             Upload Your Own Files
           </h2>
-          <div className="file-upload-box">
-            <p>Drag and drop your MP4 or PDF files here, or click to select files</p>
-            <input type="file" style={{ display: 'none' }} />
+          <div {...getRootProps()} className={`file-upload-box ${isDragActive ? 'active' : ''}`}>
+            <input {...getInputProps()} />
+            {uploadedFile ? (
+              <div className="uploaded-file">
+                <p>{uploadedFile.name} ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)</p>
+                <button onClick={(e) => { e.stopPropagation(); setUploadedFile(null); }}>Remove</button>
+              </div>
+            ) : (
+              <p>Drag and drop your MP4 file here, or click to select a file</p>
+            )}
           </div>
+          {uploadedFile && (
+            <button 
+              className="upload-button" 
+              onClick={handleUpload}
+              disabled={uploadStatus === 'uploading'}
+            >
+              {uploadStatus === 'uploading' ? 'Uploading...' : 'Upload and Process'}
+            </button>
+          )}
+          {uploadStatus === 'uploading' && <div className="loading">Processing your file...</div>}
+          {uploadStatus === 'success' && (
+            <div className="success">
+              <p>Success! Have fun learning!</p>
+              <button onClick={() => navigate('/main')} className="go-to-main-button">
+                Go to Main Page
+              </button>
+            </div>
+          )}
+          {uploadStatus === 'error' && <div className="error">Upload failed. Please try again.</div>}
         </div>
       </main>
     </div>
