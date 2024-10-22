@@ -1,4 +1,4 @@
-.home-page {
+/* .home-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -12,6 +12,23 @@
   padding: 20px;
   background-color: #FFFFFF;
   border-bottom: 1px solid #E0E0E0;
+} */
+
+.home-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #ececec;
+}
+
+.home-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E0E0E0;
+  height: 64px; /* Matching MainPage header height */
 }
 
 .home-page__main-content {

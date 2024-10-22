@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import NexusLogo from './NexusLogo';
+import NexusLogoBig from './NexusLogo_big';
 import './HomePage.css';
 
 const courses = [
@@ -78,10 +79,10 @@ const HomePage = () => {
       <main className="home-page__main-content">
         <div className="home-page__welcome-message">
           <h1 className="home-page__welcome-title">
-            Welcome to <NexusLogo />
+            Welcome to <NexusLogoBig />
           </h1>
           <p className="home-page__welcome-subtitle">
-            Start learning faster than ever with Nexus.ai
+            Start learning faster than ever with Nexus-ai
           </p>
         </div>
 

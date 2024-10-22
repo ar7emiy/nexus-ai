@@ -8,9 +8,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 12px 20px;
   background-color: #FFFFFF;
   border-bottom: 1px solid #E0E0E0;
+  height: 64px; /* Fixed height for header */
 }
 
 .main-page__tab-container {
@@ -21,19 +22,23 @@
 
 .main-page__tab-buttons {
   background-color: #74bbed;
-  border-radius: 8px;
+  border-radius: 6px;
   display: inline-flex;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  height: 36px; /* Fixed height for tab buttons */
 }
 
 .main-page__tab-button {
-  padding: 10px 20px;
+  padding: 8px 16px;
   cursor: pointer;
   border: none;
   transition: background-color 0.3s, color 0.3s;
+  font-size: 14px;
+  line-height: 20px;
 }
 
+/* Rest of the CSS remains the same */
 .main-page__tab-button--active {
   background-color: #5fb7f5;
   color: #fff;
@@ -42,7 +47,7 @@
 .main-page__content-area {
   flex: 1;
   display: flex;
-  background-color: #FAFAFA;
+  background-color: #ececec;
 }
 
 .main-page__nexus-search {
@@ -51,16 +56,17 @@
 }
 
 .main-page__sidebar {
-  width: 250px;
-  padding: 20px;
+  width: 200px;
+  padding: 8px;
   background-color: #FFFFFF;
   border-right: 1px solid #E0E0E0;
 }
 
 .main-page__course-select {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 20px;
+  padding: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
 }
 
 .main-page__history-list {
@@ -69,15 +75,19 @@
 }
 
 .main-page__history-item {
-  margin-bottom: 10px;
-  background-color: #FAFAFA;
-  padding: 10px;
-  border-radius: 5px;
+  margin-bottom: 8px;
+  background-color: #ececec;
+  padding: 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .main-page__main-content {
   flex: 1;
-  padding: 20px;
+  padding: 16px;
+  min-width: 0; /* Ensures proper flex behavior */
 }
 
 .main-page__message-container {

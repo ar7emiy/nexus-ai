@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const NexusLogo = () => {
+const NexusLogoBig = () => {
   const navigate = useNavigate();
 
   const handleLogoClick = () => {
@@ -10,7 +10,7 @@ const NexusLogo = () => {
 
   return (
     <div onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
-      <svg width="144" height="72" viewBox="0 0 192 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="192" height="96" viewBox="0 0 192 96" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="192" height="96" rx="12" ry="12" fill="#5fb7f5"/>
         <path d="M174 72H148V57.0622H157.909V62.9046H164.058V55.2697L148 43.2199V24L174 24V38.2739H164.712V33.1618H158.236V39.4357L174 51.4523V72Z" fill="#FFFFFF"/>
         <path d="M142 72H113V24H123.277V62.9046H131.689V24H142V72Z" fill="#FFFFFF"/>
@@ -22,4 +22,4 @@ const NexusLogo = () => {
   );
 };
 
-export default NexusLogo;
+export default NexusLogoBig;
