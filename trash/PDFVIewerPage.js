@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SimplifiedPDFViewer from './SimplifiedPDFViewer';
 
@@ -7,13 +7,23 @@ const PDFViewerPage = () => {
   const navigate = useNavigate();
   const { pdfUrl, searchTerm, results } = location.state || {};
 
-  // Assume the first result is the most relevant
+  useEffect(() => {
+    console.log("PDF URL in PDFViewerPage:", pdfUrl);
+    if (!pdfUrl) {
+      console.error("No PDF URL provided in state");
+    }
+  }, [pdfUrl]);
+
   const initialSnippet = results && results.length > 0 ? results[0].text : '';
 
   return (
     <div className="pdf-viewer-page">
       <button onClick={() => navigate(-1)} className="back-button">Back to Results</button>
-      <SimplifiedPDFViewer pdfUrl={pdfUrl} initialSnippet={initialSnippet} />
+      {pdfUrl ? (
+        <SimplifiedPDFViewer pdfUrl={pdfUrl} initialSnippet={initialSnippet} />
+      ) : (
+        <p>Error: No PDF URL provided</p>
+      )}
       <div className="results-sidebar">
         <h3>Search Results</h3>
         {results && results.map((result, index) => (

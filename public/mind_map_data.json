@@ -1,0 +1,46 @@
+{
+  "topics": [
+    {
+      "id": "T1",
+      "name": "Machine Learning Fundamentals",
+      "queries": [
+        {"id": "Q1", "text": "How does the naive Bayes approach function in terms of learning and classification?"},
+        {"id": "Q2", "text": "What strategies can be employed to mitigate bias in machine learning datasets?"},
+        {"id": "Q3", "text": "How do unsupervised and supervised learning differ in terms of their goals and methodologies?"},
+        {"id": "Q4", "text": "What are the key differences between random forests and gradient boosting algorithms?"},
+        {"id": "Q5", "text": "How are performance measures calculated for regression and classification models?"},
+        {"id": "Q6", "text": "What is the role of feature selection in improving model accuracy?"}
+      ]
+    },
+    {
+      "id": "T2",
+      "name": "Clinical Applications",
+      "queries": [
+        {"id": "Q7", "text": "How can machine learning enhance the range of questions addressed by clinical pharmacology?"},
+        {"id": "Q8", "text": "What are the potential applications of AI in personalized medicine?"},
+        {"id": "Q9", "text": "How is natural language processing being used to analyze electronic health records?"},
+        {"id": "Q10", "text": "What ethical considerations arise when implementing AI in clinical decision support systems?"},
+        {"id": "Q11", "text": "How can machine learning models be validated for use in clinical settings?"}
+      ]
+    },
+    {
+      "id": "T3",
+      "name": "AI Ethics and Governance",
+      "queries": [
+        {"id": "Q12", "text": "What are the key ethical challenges in developing AI for healthcare applications?"},
+        {"id": "Q13", "text": "How can we ensure fairness and transparency in AI-driven decision-making processes?"},
+        {"id": "Q14", "text": "What regulatory frameworks are being developed to govern the use of AI in medicine?"}
+      ]
+    }
+  ],
+  "connections": [
+    ["Q1", "Q7"],
+    ["Q2", "Q10"],
+    ["Q3", "Q8"],
+    ["Q5", "Q11"],
+    ["Q6", "Q9"],
+    ["Q4", "Q13"],
+    ["Q12", "Q11"],
+    ["Q14", "Q10"]
+  ]
+}

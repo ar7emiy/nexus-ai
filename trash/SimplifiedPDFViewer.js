@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
-import 'pdfjs-dist/web/pdf_viewer.css';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 const SimplifiedPDFViewer = ({ pdfUrl, initialSnippet }) => {
   const canvasRef = useRef(null);
@@ -11,28 +11,36 @@ const SimplifiedPDFViewer = ({ pdfUrl, initialSnippet }) => {
   const [pageText, setPageText] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [totalPages, setTotalPages] = useState(0);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadPDF = async () => {
-      const loadingTask = pdfjsLib.getDocument(pdfUrl);
-      const pdf = await loadingTask.promise;
-      setPdfDoc(pdf);
-      setTotalPages(pdf.numPages);
-      
-      if (initialSnippet) {
-        const snippetPage = await findSnippetPage(pdf, initialSnippet);
-        if (snippetPage) {
-          setPageNum(snippetPage);
-          renderPage(snippetPage, pdf);
+      try {
+        const loadingTask = pdfjsLib.getDocument(pdfUrl);
+        const pdf = await loadingTask.promise;
+        setPdfDoc(pdf);
+        setTotalPages(pdf.numPages);
+        
+        if (initialSnippet) {
+          const snippetPage = await findSnippetPage(pdf, initialSnippet);
+          if (snippetPage) {
+            setPageNum(snippetPage);
+            renderPage(snippetPage, pdf);
+          } else {
+            renderPage(1, pdf);
+          }
         } else {
           renderPage(1, pdf);
         }
-      } else {
-        renderPage(1, pdf);
+      } catch (error) {
+        console.error('Error loading PDF:', error);
+        setError('Failed to load PDF. Please check the URL and try again.');
       }
     };
 
-    loadPDF();
+    if (pdfUrl) {
+      loadPDF();
+    }
   }, [pdfUrl, initialSnippet]);
 
   const findSnippetPage = async (pdf, snippet) => {
@@ -107,21 +115,27 @@ const SimplifiedPDFViewer = ({ pdfUrl, initialSnippet }) => {
 
   return (
     <div className="pdf-viewer">
-      <div className="search-bar">
-        <input 
-          type="text" 
-          value={searchTerm} 
-          onChange={(e) => setSearchTerm(e.target.value)} 
-          placeholder="Search term"
-        />
-        <button onClick={handleSearch}>Search</button>
-      </div>
-      <canvas ref={canvasRef}></canvas>
-      <div className="page-navigation">
-        <button onClick={() => changePage(-1)} disabled={pageNum <= 1}>Previous</button>
-        <span>Page {pageNum} of {totalPages}</span>
-        <button onClick={() => changePage(1)} disabled={pageNum >= totalPages}>Next</button>
-      </div>
+      {error ? (
+        <div className="error-message">{error}</div>
+      ) : (
+        <>
+          <div className="search-bar">
+            <input 
+              type="text" 
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)} 
+              placeholder="Search term"
+            />
+            <button onClick={handleSearch}>Search</button>
+          </div>
+          <canvas ref={canvasRef}></canvas>
+          <div className="page-navigation">
+            <button onClick={() => changePage(-1)} disabled={pageNum <= 1}>Previous</button>
+            <span>Page {pageNum} of {totalPages}</span>
+            <button onClick={() => changePage(1)} disabled={pageNum >= totalPages}>Next</button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

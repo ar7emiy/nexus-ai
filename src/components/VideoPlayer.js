@@ -33,7 +33,7 @@ const VideoPlayer = ({ videoUrl, snippets, currentTimeRange, onTimeUpdate, selec
             left: `${startPercent}%`,
             width: `${width}%`,
             height: '100%',
-            backgroundColor: selectedSnippet === snippet ? '#A65D3A' : '#9c9895',
+            backgroundColor: selectedSnippet === snippet ? '#5fb7f5' : '#9c9895',
             opacity: 0.7,
           }}
         />
