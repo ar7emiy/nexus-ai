@@ -5,7 +5,7 @@ import NexusLogo from './NexusLogo';
 import './HomePage.css';
 
 const courses = [
-  { name: 'Artificial Intelligence II', id: 1, code: 'CSC 580' },
+  { name: 'Advanced Machine Learning II', id: 1, code: 'CSC 580' },
   { name: 'Natural Language Processing', id: 2, code: 'CSC 583' },
   { name: 'Neural Networks & Deep Learning', id: 3, code: 'CSC 578' },
 ];

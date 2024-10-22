@@ -169,9 +169,9 @@ const MainPage = () => {
           <div className="main-page__nexus-search">
             <div className="main-page__sidebar">
               <select className="main-page__course-select">
-                <option>Course #: Name</option>
-                <option>Course 1</option>
-                <option>Course 2</option>
+                <option>Advanced Machine Learning II</option>
+                <option>Natural Language Processing</option>
+                <option>Neural Networks & Deep Learning</option>
               </select>
               <h3>Previous Results</h3>
               <ul className="main-page__history-list">
