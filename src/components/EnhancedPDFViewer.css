@@ -224,7 +224,7 @@
   }
   
   .pdf-viewer__nav-button:hover:not(:disabled) {
-    background-color: #8B4B2E;
+    background-color: #084a78;
   }
   
   .pdf-viewer__nav-button:disabled {

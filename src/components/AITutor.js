@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import mermaid from 'mermaid';
 import './AITutor.css';
 
-// Initialize mermaid with adjusted configuration
 mermaid.initialize({
   startOnLoad: true,
   theme: 'default',
@@ -12,27 +11,28 @@ mermaid.initialize({
     useMaxWidth: true,
     htmlLabels: true,
     curve: 'basis',
-    nodeSpacing: 150,    // Increased for better spacing
-    rankSpacing: 150,    // Increased for better spacing
+    nodeSpacing: 100,
+    rankSpacing: 100,
     wrap: true,
-    fontSize: 12,        // Reduced font size
-    labelBackground: 'transparent' // Remove label backgrounds
+    fontSize: 12,
+    labelBackground: 'transparent',
+    rankDir: 'TB',        // Top to Bottom direction
+    ranker: 'tight-tree'  // Use tree-like layout
   }
 });
-
 const generateMermaidChart = (data) => {
-  let chart = 'graph LR\n';
+  let chart = 'graph TD\n';  // Changed to TD (top-down) layout
   
-  // Add topics
-  data.topics.forEach(topic => {
+  // Add central topic
+  chart += '    Main[Machine Learning in Healthcare]\n';
+  
+  // Add topics radially around the center
+  data.topics.forEach((topic, index) => {
     const formattedName = topic.name.replace(/ /g, '<br/>');
-    chart += `    ${topic.id}["${formattedName}"]\n`;
-  });
-  
-  // Add questions with full text
-  data.topics.forEach(topic => {
+    chart += `    Main --- ${topic.id}["${formattedName}"]\n`;
+    
+    // Add questions in a structured way below each topic
     topic.queries.forEach(query => {
-      // Format query text with line breaks every 6-7 words (increased for smaller font)
       const words = query.text.split(' ');
       let formattedText = '';
       for (let i = 0; i < words.length; i += 6) {
@@ -40,20 +40,22 @@ const generateMermaidChart = (data) => {
       }
       formattedText = formattedText.replace(/<br\/>$/, '');
       
-      chart += `    ${topic.id} -->|contains| ${query.id}["${formattedText}"]\n`;
+      chart += `    ${topic.id} --> ${query.id}["${formattedText}"]\n`;
     });
   });
   
-  // Add connections between questions with transparent backgrounds
+  // Add connections between questions with curved lines
   data.connections.forEach(([from, to]) => {
-    chart += `    ${from} -.->|relates to| ${to}\n`;
+    chart += `    ${from} -.-o ${to}\n`;  // Changed to dotted lines with circle
   });
   
-  // Add styling with adjusted dimensions and font sizes
+  // Enhanced styling
   chart += `
-    classDef topic fill:#084a78,stroke:#333,stroke-width:2px,rx:8,ry:8,font-size:14px,color:white
-    classDef question fill:#bee1fa,stroke:#666,stroke-width:1px,rx:5,ry:5,width:300px,font-size:12px
+    classDef main fill:#2C3E50,stroke:#2C3E50,stroke-width:2px,rx:8,ry:8,font-size:22px,color:white
+    classDef topic fill:#084a78,stroke:#333,stroke-width:2px,rx:8,ry:8,font-size:18px,color:white
+    classDef question fill:#bee1fa,stroke:#666,stroke-width:1px,rx:5,ry:5,width:250px,font-size:16px
     classDef edgeLabel background:none,font-size:10px
+    class Main main
     class ${data.topics.map(t => t.id).join(',')} topic
     class ${data.topics.flatMap(t => t.queries.map(q => q.id)).join(',')} question
   `;
@@ -62,6 +64,11 @@ const generateMermaidChart = (data) => {
 };
 
 const AITutor = () => {
+  const [zoom, setZoom] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
+  
   const data = {
     "topics": [
       {
@@ -148,15 +155,73 @@ const AITutor = () => {
     ]
   };
 
-
   useEffect(() => {
     mermaid.contentLoaded();
   }, []);
 
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(prev + 0.1, 2));
+  };
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(prev - 0.1, 0.5));
+  };
+
+  const handleReset = () => {
+    setZoom(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartPosition({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging) {
+      setPosition({
+        x: e.clientX - startPosition.x,
+        y: e.clientY - startPosition.y
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   return (
     <div className="ai-tutor">
-      <div className="mermaid-container">
-        <div className="mermaid">
+      <div className="zoom-controls">
+        <button onClick={handleZoomIn} className="zoom-button">
+          <span>+</span>
+        </button>
+        <button onClick={handleZoomOut} className="zoom-button">
+          <span>-</span>
+        </button>
+        <button onClick={handleReset} className="zoom-button">
+          <span>Reset</span>
+        </button>
+      </div>
+      <div 
+        className="mermaid-container"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        <div 
+          className="mermaid"
+          style={{
+            transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
+            transformOrigin: 'center center',
+            transition: 'transform 0.2s ease',
+            cursor: isDragging ? 'grabbing' : 'grab'
+          }}
+        >
           {generateMermaidChart(data)}
         </div>
       </div>

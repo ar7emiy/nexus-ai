@@ -1,12 +1,10 @@
-import React, { useState, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDropzone } from 'react-dropzone';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import NexusLogo from './NexusLogo';
-import NexusLogoBig from './NexusLogo_big';
 import './HomePage.css';
 
 const courses = [
-  { name: 'Advanced Machine Learning II', id: 1, code: 'CSC 580' },
+  { name: 'Artificial Intelligence II', id: 1, code: 'CSC 580' },
   { name: 'Natural Language Processing', id: 2, code: 'CSC 583' },
   { name: 'Neural Networks & Deep Learning', id: 3, code: 'CSC 578' },
 ];
@@ -18,57 +16,14 @@ const ProfileIcon = () => (
   </svg>
 );
 
+const PlusIcon = () => (
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 8.33334V31.6667" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+    <path d="M31.6667 20H8.33334" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+  </svg>
+);
+
 const HomePage = () => {
-  const [uploadedFile, setUploadedFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState('idle');
-  const navigate = useNavigate();
-
-  const onDrop = useCallback((acceptedFiles) => {
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0];
-      if (file.type === 'video/mp4') {
-        setUploadedFile(file);
-      } else {
-        alert('Please upload an MP4 file.');
-      }
-    }
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: 'video/mp4',
-    multiple: false
-  });
-
-  const handleUpload = async () => {
-    if (!uploadedFile) return;
-
-    setUploadStatus('uploading');
-    
-    try {
-      const formData = new FormData();
-      formData.append('file', uploadedFile);
-
-      // Replace with your actual upload endpoint
-      const response = await fetch('https://your-upload-endpoint.com/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      setUploadStatus('success');
-      setTimeout(() => {
-        setUploadStatus('idle');
-      }, 3000);
-    } catch (error) {
-      console.error('Upload error:', error);
-      setUploadStatus('error');
-    }
-  };
-
   return (
     <div className="home-page">
       <header className="home-page__header">
@@ -79,10 +34,10 @@ const HomePage = () => {
       <main className="home-page__main-content">
         <div className="home-page__welcome-message">
           <h1 className="home-page__welcome-title">
-            Welcome to <NexusLogoBig />
+            Welcome to <NexusLogo />
           </h1>
           <p className="home-page__welcome-subtitle">
-            Start learning faster than ever with Nexus-ai
+            Start learning faster than ever with Nexus.ai
           </p>
         </div>
 
@@ -99,42 +54,17 @@ const HomePage = () => {
               </div>
             </Link>
           ))}
-        </div>
-
-        <div className="home-page__file-upload-area">
-          <h2 className="home-page__file-upload-title">
-            Upload Your Own Files
-          </h2>
-          <div {...getRootProps()} className={`home-page__file-upload-box ${isDragActive ? 'active' : ''}`}>
-            <input {...getInputProps()} />
-            {uploadedFile ? (
-              <div className="home-page__uploaded-file">
-                <p>{uploadedFile.name} ({(uploadedFile.size / 1024 / 1024).toFixed(2)} MB)</p>
-                <button onClick={(e) => { e.stopPropagation(); setUploadedFile(null); }}>Remove</button>
+          <Link 
+            to="/course-builder" 
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <div className="home-page__course-item">
+              <h3 className="home-page__course-name">Create Your Own</h3>
+              <div className="home-page__plus-icon">
+                <PlusIcon />
               </div>
-            ) : (
-              <p>Drag and drop your MP4 file here, or click to select a file</p>
-            )}
-          </div>
-          {uploadedFile && (
-            <button 
-              className="home-page__upload-button" 
-              onClick={handleUpload}
-              disabled={uploadStatus === 'uploading'}
-            >
-              {uploadStatus === 'uploading' ? 'Uploading...' : 'Upload and Process'}
-            </button>
-          )}
-          {uploadStatus === 'uploading' && <div className="home-page__loading">Processing your file...</div>}
-          {uploadStatus === 'success' && (
-            <div className="home-page__success">
-              <p>Success! Have fun learning!</p>
-              <button onClick={() => navigate('/main')} className="home-page__go-to-main-button">
-                Go to Main Page
-              </button>
             </div>
-          )}
-          {uploadStatus === 'error' && <div className="home-page__error">Upload failed. Please try again.</div>}
+          </Link>
         </div>
       </main>
     </div>
