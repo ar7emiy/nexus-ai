@@ -10,7 +10,16 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.j
 const EnhancedPDFViewer = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { pdfUrl, searchTerm, results, relationSummary } = location.state || {};
+  const { 
+    pdfUrl, 
+    searchTerm, 
+    results, 
+    relationSummary,
+    messages,
+    history,
+    videoUrl,
+    selectedVideoSnippet
+  } = location.state || {};
 
   const canvasRef = useRef(null);
   const [pdfDoc, setPdfDoc] = useState(null);
@@ -106,6 +115,19 @@ const EnhancedPDFViewer = () => {
     });
   }, [totalPages]);
 
+  const handleBackToResults = () => {
+    navigate('/main', {
+      state: {
+        messages,
+        history,
+        videoUrl,
+        selectedVideoSnippet,
+        pdfUrl
+      },
+      replace: true
+    });
+  };
+
   const ProfileIcon = () => (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="32" height="32" rx="16" fill="#5fb7f5"/>
@@ -118,7 +140,7 @@ const EnhancedPDFViewer = () => {
       <header className="pdf-viewer__header">
         <NexusLogo />
         <div className="pdf-viewer__buttons">
-          <button className="pdf-viewer__button" onClick={() => navigate(-1)}>Back to Results</button>
+          <button className="pdf-viewer__button" onClick={handleBackToResults}>Back to Results</button>
           <select className="pdf-viewer__select">
             <option>Select PDF</option>
             {'No other PDFs'}

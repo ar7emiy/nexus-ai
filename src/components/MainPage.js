@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import AITutor from './AITutor';
 import TextInputBar from './TextInputBar';
@@ -8,6 +8,7 @@ import VideoPlayer from './VideoPlayer';
 import './MainPage.css';
 
 const MainPage = () => {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('nexus');
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
@@ -18,6 +19,25 @@ const MainPage = () => {
   const [pdfUrl, setPdfUrl] = useState('');
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
+
+  // Restore state from navigation
+  useEffect(() => {
+    if (location.state?.messages) {
+      setMessages(location.state.messages);
+    }
+    if (location.state?.history) {
+      setHistory(location.state.history);
+    }
+    if (location.state?.videoUrl) {
+      setVideoUrl(location.state.videoUrl);
+    }
+    if (location.state?.pdfUrl) {
+      setPdfUrl(location.state.pdfUrl);
+    }
+    if (location.state?.selectedVideoSnippet) {
+      setSelectedVideoSnippet(location.state.selectedVideoSnippet);
+    }
+  }, [location.state]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -87,11 +107,15 @@ const MainPage = () => {
           pdfUrl: pdfUrl, 
           searchTerm: input, 
           results: lastMessage.pdfData.results,
-          relationSummary: lastMessage.pdfData.relation_summary 
+          relationSummary: lastMessage.pdfData.relation_summary,
+          messages: messages,
+          history: history,
+          videoUrl: videoUrl,
+          selectedVideoSnippet: selectedVideoSnippet
         } 
       });
     }
-  }, [messages, pdfUrl, input, navigate]);
+  }, [messages, pdfUrl, input, navigate, history, videoUrl, selectedVideoSnippet]);
 
   const formatTimestamp = (timestamp) => {
     return timestamp.split('.')[0];
@@ -121,10 +145,14 @@ const MainPage = () => {
           onClick={() => onSnippetClick(snippet)}
           className={`main-page__snippet-item ${selectedSnippet === snippet ? 'main-page__snippet-item--selected' : ''}`}
         >
-          {snippet.summary} 
-          <span className="main-page__timestamp">
-            [{formatTimestamp(snippet.time_stamp.start_time)} - {formatTimestamp(snippet.time_stamp.end_time)}]
-          </span>
+          <div className="main-page__snippet-content">
+            <ReactMarkdown className="main-page__markdown-content">
+              {snippet.summary}
+            </ReactMarkdown>
+            <span className="main-page__timestamp">
+              [{formatTimestamp(snippet.time_stamp.start_time)} - {formatTimestamp(snippet.time_stamp.end_time)}]
+            </span>
+          </div>
         </div>
       ))}
     </div>
