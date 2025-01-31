@@ -7,6 +7,9 @@ import NexusLogo from './NexusLogo';
 import VideoPlayer from './VideoPlayer';
 import './MainPage.css';
 
+//console.log("Video endpoint:", process.env.REACT_APP_VIDEO_API_ENDPOINT);
+//console.log("PDF endpoint:", process.env.REACT_APP_PDF_API_ENDPOINT);
+
 const MainPage = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('nexus');
@@ -56,14 +59,14 @@ const MainPage = () => {
         setMessages(prevMessages => [...prevMessages, { text: input, isUser: true }]);
 
         // Make both API calls
-        const videoResponse = await fetch('process.env.REACT_APP_VIDEO_API_ENDPOINT', {
+        const videoResponse = await fetch(process.env.REACT_APP_VIDEO_API_ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ input }),
         });
         const videoData = await videoResponse.json();
 
-        const pdfResponse = await fetch('process.env.REACT_APP_PDF_API_ENDPOINT', {
+        const pdfResponse = await fetch(process.env.REACT_APP_PDF_API_ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ input }),
