@@ -1,75 +1,53 @@
-<<<<<<< HEAD
-# Getting Started with Create React App
+# Overview
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**visit nxs-ai.com to try demo yourself**
+[![Watch the video]](https://www.youtube.com/watch?v=kcUrNTFGdZA)
 
-## Available Scripts
 
-In the project directory, you can run:
+**NexusAI**
 
-### `npm start`
+NexusAI is a platform designed to help students learn more efficiently with the aid of AI. Rather than providing direct answers, NexusAI focuses on helping students locate and understand the information they need from their own course materials.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+**Key Features**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+• AI-Enhanced Search: Utilizes Google Gemini to process and search through course content.
 
-### `npm run build`
+• Chatbot Interface: Students can ask questions and receive contextual snippets from their materials, which are highlighted and explained by the chatbot.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+• Efficient Answer Location: Provides a way to pinpoint relevant information without giving direct answers, avoiding plagiarism issues.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+• Custom Course Uploads: Students can upload and customize their own courses with materials like PDFs and video lectures. (In development)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**How it works**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Students or teachers upload materials to the platform, which are then stored in the cloud. When a student asks a question, the AI searches through the uploaded content and provides snippets that best match the query.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Resource Breakdown:
 
-## Learn More
+### Cloud function codefiles
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**gcp_nxs-function**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+This GCP function processes user queries related to a lecture video, retrieving relevant snippets, generating summaries, and providing a signed URL for the video. It consists of two interacting files:
 
-### Code Splitting
+*   **main.py:** This file contains the core logic for handling user requests and orchestrating the processing pipeline.  The key function is `process_input`, which handles HTTP requests, extracts the user's query, calls `process_snippets` (explained below), loads processed data from GCS, generates a signed video URL, and returns the results.  Other important functions include `load_from_gcs`, `save_to_gcs`, `generate_signed_url`, `convert_to_seconds`, and `group_intervals`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+*   **retrieval_key.py:** This supporting file focuses on retrieving relevant video segments based on the user's query.  The crucial function here is `retrieve`, which loads video transcript data and pre-computed embeddings, embeds the user's query, calculates cosine similarity scores between the query embedding and the video segment embeddings, and returns the top 14 most similar segments.  This function is called by `process_snippets` in `main.py`. Other functions include `embed_text`, `load_data`, and `cosine_similarity`.
 
-### Analyzing the Bundle Size
+The interaction is as follows: `main.py` receives the user's query, and then uses `retrieval_key.py`'s `retrieve` function to get the most relevant snippets.  `main.py` then processes these snippets and generates summaries.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+**gcp_pdf-retrieval-function**
 
-### Making a Progressive Web App
+This GCP function processes user queries related to a PDF document, retrieving relevant snippets, generating a relationship summary, and providing a signed URL for the PDF. It also comprises two files:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+*   **main.py:** This file handles incoming HTTP requests, extracts the query, and orchestrates the PDF processing. The core function is `process_pdf_query`.  It loads PDF embeddings, calls `retrieve_pdf_snippets` (explained below), generates a relationship summary using `generate_relation_summary`, and returns the results along with a signed PDF URL. It also includes `embed_text`, `load_pdf_embeddings`, `cosine_similarity`, `preprocess_text`, and `generate_signed_url`.
 
-### Advanced Configuration
+*   **pdf_retrieval.py:** This file provides the functions for retrieving and summarizing relevant PDF content. The main function is `pdf_retrieval`, which takes a query, calls `retrieve_pdf_snippets` (explained below) to get relevant snippets, generates a signed URL for the PDF, and returns the results. It also includes `cosine_similarity`, `load_pdf_embeddings`, `generate_summary`, and `retrieve_pdf_snippets`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+The interaction between the files is as follows: `main.py`'s `process_pdf_query` calls `pdf_retrieval.py`'s `pdf_retrieval` method.  `pdf_retrieval` then uses `retrieve_pdf_snippets` to identify the most relevant snippets, which are then used by main.py to generate a response.  This response includes the snippets, a relationship summary (generated by `main.py`), and a link to the PDF.
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-=======
-# nexus-ai
-The home of nexus.ai. home of most efficient, actual, learning leveraging AI.
->>>>>>> 0622fb31393f128dff3a87693ca2e7873ecb8d06
