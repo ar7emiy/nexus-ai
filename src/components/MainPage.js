@@ -56,14 +56,14 @@ const MainPage = () => {
         setMessages(prevMessages => [...prevMessages, { text: input, isUser: true }]);
 
         // Make both API calls
-        const videoResponse = await fetch('https://nxs-function-874406122772.us-central1.run.app', {
+        const videoResponse = await fetch('process.env.REACT_APP_VIDEO_API_ENDPOINT', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ input }),
         });
         const videoData = await videoResponse.json();
 
-        const pdfResponse = await fetch('https://pdf-retrieval-function-874406122772.us-central1.run.app', {
+        const pdfResponse = await fetch('process.env.REACT_APP_PDF_API_ENDPOINT', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ input }),
