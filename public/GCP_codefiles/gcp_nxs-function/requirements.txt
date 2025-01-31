@@ -1,0 +1,8 @@
+functions-framework==3.*
+google-cloud-storage
+google-cloud-aiplatform
+vertexai
+pandas
+numpy
+scikit-learn
+google-cloud-logging

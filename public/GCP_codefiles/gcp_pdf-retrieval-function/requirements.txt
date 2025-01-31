@@ -1,0 +1,5 @@
+functions-framework==3.*
+google-cloud-storage
+google-cloud-aiplatform
+vertexai
+numpy
